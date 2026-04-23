@@ -19,25 +19,42 @@ export default function CompareBar() {
           exit={{ y: 100, opacity: 0 }}
           className="fixed bottom-4 left-1/2 z-50 w-[min(920px,calc(100vw-2rem))] -translate-x-1/2"
         >
-          <div className="glass flex items-center gap-3 rounded-2xl px-4 py-3 shadow-glow">
-            <div className="text-xs text-white/60">
-              已选 <span className="text-neon-cyan font-bold">{ids.length}</span>/3
+          <div className="glass rounded-2xl px-4 py-3 shadow-glow">
+            <div className="flex items-center justify-between gap-3">
+              <div className="shrink-0 text-xs text-white/60">
+                已选 <span className="text-neon-cyan font-bold">{ids.length}</span>/3
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <button onClick={clear} className="btn-ghost h-9 px-3 text-xs">
+                  清空
+                </button>
+                <Link
+                  href={`/compare?ids=${ids.join(',')}`}
+                  className={[
+                    'btn-primary h-9 px-4 text-sm whitespace-nowrap',
+                    ids.length < 2 ? 'pointer-events-none opacity-40' : '',
+                  ].join(' ')}
+                >
+                  开始对比 →
+                </Link>
+              </div>
             </div>
-            <div className="flex flex-1 flex-wrap gap-2">
+
+            <div className="mt-2 flex flex-wrap gap-2">
               {ids.map((id) => {
                 const t = tools[id];
                 return (
                   <div
                     key={id}
-                    className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs"
+                    className="flex min-w-0 items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs"
                   >
                     {t?.logo_url ? (
-                      <img src={t.logo_url} alt="" className="h-4 w-4 rounded" />
+                      <img src={t.logo_url} alt="" className="h-4 w-4 shrink-0 rounded" />
                     ) : null}
-                    <span>{t?.name || `#${id}`}</span>
+                    <span className="max-w-[10rem] truncate">{t?.name || `#${id}`}</span>
                     <button
                       onClick={() => remove(id)}
-                      className="text-white/40 hover:text-neon-pink"
+                      className="shrink-0 text-white/40 hover:text-neon-pink"
                       aria-label="移除"
                     >
                       ×
@@ -46,18 +63,6 @@ export default function CompareBar() {
                 );
               })}
             </div>
-            <button onClick={clear} className="btn-ghost h-9 px-3 text-xs">
-              清空
-            </button>
-            <Link
-              href={`/compare?ids=${ids.join(',')}`}
-              className={[
-                'btn-primary h-9 px-4 text-sm',
-                ids.length < 2 ? 'pointer-events-none opacity-40' : '',
-              ].join(' ')}
-            >
-              开始对比 →
-            </Link>
           </div>
         </motion.div>
       )}
