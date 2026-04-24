@@ -17,13 +17,38 @@ export default function CompareBar() {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          className="fixed bottom-4 left-1/2 z-50 w-[min(920px,calc(100vw-2rem))] -translate-x-1/2"
+          className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-[920px]"
         >
           <div className="glass rounded-2xl px-4 py-3 shadow-glow">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
               <div className="shrink-0 text-xs text-white/60">
                 已选 <span className="text-neon-cyan font-bold">{ids.length}</span>/3
               </div>
+
+              <div className="flex min-w-0 flex-1 flex-wrap gap-2">
+                {ids.map((id) => {
+                  const t = tools[id];
+                  return (
+                    <div
+                      key={id}
+                      className="flex min-w-0 items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs"
+                    >
+                      {t?.logo_url ? (
+                        <img src={t.logo_url} alt="" className="h-4 w-4 shrink-0 rounded" />
+                      ) : null}
+                      <span className="max-w-[10rem] truncate">{t?.name || `#${id}`}</span>
+                      <button
+                        onClick={() => remove(id)}
+                        className="shrink-0 text-white/40 hover:text-neon-pink"
+                        aria-label="移除"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+
               <div className="flex shrink-0 items-center gap-2">
                 <button onClick={clear} className="btn-ghost h-9 px-3 text-xs">
                   清空
@@ -38,30 +63,6 @@ export default function CompareBar() {
                   开始对比 →
                 </Link>
               </div>
-            </div>
-
-            <div className="mt-2 flex flex-wrap gap-2">
-              {ids.map((id) => {
-                const t = tools[id];
-                return (
-                  <div
-                    key={id}
-                    className="flex min-w-0 items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs"
-                  >
-                    {t?.logo_url ? (
-                      <img src={t.logo_url} alt="" className="h-4 w-4 shrink-0 rounded" />
-                    ) : null}
-                    <span className="max-w-[10rem] truncate">{t?.name || `#${id}`}</span>
-                    <button
-                      onClick={() => remove(id)}
-                      className="shrink-0 text-white/40 hover:text-neon-pink"
-                      aria-label="移除"
-                    >
-                      ×
-                    </button>
-                  </div>
-                );
-              })}
             </div>
           </div>
         </motion.div>
