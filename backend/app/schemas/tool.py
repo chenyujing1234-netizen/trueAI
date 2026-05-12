@@ -33,6 +33,7 @@ class ToolDetail(ToolBrief):
     support_cli: bool
     support_api: bool
     official_url: Optional[str] = None
+    video_url: Optional[str] = None
     usability_score: float
     effect_score: float
     price_score: float

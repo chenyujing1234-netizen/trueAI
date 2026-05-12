@@ -142,6 +142,7 @@ def get_tool(id_or_slug: str, db: Session = Depends(get_db)):
         support_cli=tool.support_cli,
         support_api=tool.support_api,
         official_url=tool.official_url,
+        video_url=tool.video_url,
         usability_score=float(tool.usability_score or 0),
         effect_score=float(tool.effect_score or 0),
         price_score=float(tool.price_score or 0),

@@ -44,6 +44,7 @@ class Tool(Base):
     support_api: Mapped[bool] = mapped_column(Boolean, default=False)
 
     official_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    video_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
 
     overall_score: Mapped[float] = mapped_column(Numeric(3, 1), default=0)
     usability_score: Mapped[float] = mapped_column(Numeric(3, 1), default=0)

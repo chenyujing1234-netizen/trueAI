@@ -10,7 +10,9 @@ from app.api.routers import (
     rankings,
     stats,
     search,
+    analytics,
 )
+from app.middleware.tracking import TrackingMiddleware
 
 app = FastAPI(
     title="TrueAI API",
@@ -25,6 +27,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(TrackingMiddleware)
 
 
 @app.get("/api/health")
@@ -39,3 +42,4 @@ app.include_router(reviews.router, prefix="/api/reviews", tags=["reviews"])
 app.include_router(rankings.router, prefix="/api/rankings", tags=["rankings"])
 app.include_router(stats.router, prefix="/api/stats", tags=["stats"])
 app.include_router(search.router, prefix="/api/search", tags=["search"])
+app.include_router(analytics.router, prefix="/api/analytics", tags=["analytics"])

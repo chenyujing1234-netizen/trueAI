@@ -8,6 +8,7 @@ const LINKS = [
   { href: '/search', label: '懂你 · AI 导航', highlight: true },
   { href: '/rankings', label: '排行榜' },
   { href: '/earn', label: '我要赚钱' },
+  { href: '/admin/analytics', label: '数据看板' },
 ];
 
 export default function NavBar() {
