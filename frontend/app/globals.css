@@ -79,3 +79,12 @@ body {
 .chip {
   @apply inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-white/80;
 }
+
+/* 工具卡片入场动画：CSS 驱动，不依赖 JS，无 SSR 白屏问题 */
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.card-appear {
+  animation: card-in 0.35s ease both;
+}

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -6,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.core.db import get_db
 from app.models import Category, Tool, ToolAudience, ToolCategory
+from app.models.external_review import ExternalReview
 from app.schemas.tool import ToolBrief, ToolDetail, ToolListResponse
 
 router = APIRouter()
@@ -150,6 +152,51 @@ def get_tool(id_or_slug: str, db: Session = Depends(get_db)):
         reviewed_at=tool.reviewed_at,
         created_at=tool.created_at,
     )
+
+
+@router.get("/{id_or_slug}/external-reviews")
+def get_external_reviews(
+    id_or_slug: str,
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=50),
+):
+    """获取工具的外部平台评论（如观猹）。"""
+    tool = None
+    if id_or_slug.isdigit():
+        tool = db.get(Tool, int(id_or_slug))
+    if tool is None:
+        tool = db.query(Tool).filter_by(slug=id_or_slug).one_or_none()
+    if tool is None:
+        raise HTTPException(404, "工具不存在")
+
+    q = db.query(ExternalReview).filter(ExternalReview.tool_id == tool.id)
+    total = q.with_entities(func.count(ExternalReview.id)).scalar() or 0
+    reviews = (
+        q.order_by(ExternalReview.upvotes.desc(), ExternalReview.external_created_at.desc())
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
+    return {
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "items": [
+            {
+                "id": r.id,
+                "source": r.source,
+                "content": r.content,
+                "score": float(r.score) if r.score is not None else None,
+                "author_name": r.author_name,
+                "author_avatar": r.author_avatar,
+                "upvotes": r.upvotes,
+                "reply_count": r.reply_count,
+                "external_created_at": r.external_created_at.isoformat() if r.external_created_at else None,
+            }
+            for r in reviews
+        ],
+    }
 
 
 @router.post("/compare")

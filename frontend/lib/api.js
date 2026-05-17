@@ -5,13 +5,17 @@ const BASE =
 
 async function request(path, options = {}) {
   const url = `${BASE}${path}`;
+  const isServer = typeof window === 'undefined';
   const res = await fetch(url, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
       ...(options.headers || {}),
     },
-    cache: 'no-store',
+    // 服务端请求启用 ISR 缓存（30s）；客户端请求不缓存
+    ...(isServer && !options.noCache
+      ? { next: { revalidate: 30 } }
+      : { cache: 'no-store' }),
   });
   if (!res.ok) {
     const text = await res.text().catch(() => '');

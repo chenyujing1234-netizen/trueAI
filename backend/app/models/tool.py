@@ -46,6 +46,11 @@ class Tool(Base):
     official_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     video_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
 
+    # 外部来源（watcha 等）
+    source: Mapped[str] = mapped_column(String(32), default="manual", index=True)
+    external_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    external_slug: Mapped[str | None] = mapped_column(String(128), nullable=True)
+
     overall_score: Mapped[float] = mapped_column(Numeric(3, 1), default=0)
     usability_score: Mapped[float] = mapped_column(Numeric(3, 1), default=0)
     effect_score: Mapped[float] = mapped_column(Numeric(3, 1), default=0)

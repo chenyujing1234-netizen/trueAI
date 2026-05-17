@@ -40,11 +40,12 @@ export default function ToolCard({ tool, index = 0, hangeffect = false }) {
         </div>
       )}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.03 * index, duration: 0.4 }}
-        className="origin-top"
-        style={{ transformOrigin: 'top center' }}
+        initial={false}
+        className="origin-top card-appear"
+        style={{
+          transformOrigin: 'top center',
+          animationDelay: `${index * 30}ms`,
+        }}
       >
         <motion.div
           animate={hangeffect ? { rotate: swingRange } : { rotate: 0 }}

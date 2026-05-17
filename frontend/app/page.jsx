@@ -1,36 +1,76 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 import HeroTypewriter from '@/components/HeroTypewriter';
 import StatsBar from '@/components/StatsBar';
 import Sidebar from '@/components/Sidebar';
 import ToolCard from '@/components/ToolCard';
 import HomeSearchBox from '@/components/HomeSearchBox';
+import { ToolGridSkeleton } from '@/components/ToolCardSkeleton';
 import { api } from '@/lib/api';
 
 export const revalidate = 30;
 
-async function safeFetch(promise, fallback) {
+// ─── 异步数据子组件：各自独立加载，不互相阻塞 ──────────────
+
+async function TopTools() {
   try {
-    return await promise;
-  } catch (e) {
-    console.error('[home] fetch error', e?.message);
-    return fallback;
+    const data = await api.tools({ sort: 'overall', page_size: 9 });
+    return (
+      <div className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+        {(data.items || []).map((t, i) => (
+          <ToolCard key={t.id} tool={t} index={i} hangeffect />
+        ))}
+      </div>
+    );
+  } catch {
+    return <p className="text-white/40 text-sm">加载失败，请刷新重试</p>;
   }
 }
 
-export default async function HomePage() {
-  const [stats, categories, top, newest] = await Promise.all([
-    safeFetch(api.stats(), { tools: 0, categories: 0, reviews: 0, users: 0 }),
-    safeFetch(api.categories(), []),
-    safeFetch(api.tools({ sort: 'overall', page_size: 9 }), { items: [] }),
-    safeFetch(api.tools({ sort: 'new', page_size: 6 }), { items: [] }),
-  ]);
+async function NewestTools() {
+  try {
+    const data = await api.tools({ sort: 'new', page_size: 6 });
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {(data.items || []).map((t, i) => (
+          <ToolCard key={t.id} tool={t} index={i} />
+        ))}
+      </div>
+    );
+  } catch {
+    return <p className="text-white/40 text-sm">加载失败，请刷新重试</p>;
+  }
+}
 
+async function SidebarData() {
+  try {
+    const categories = await api.categories();
+    return <Sidebar categories={categories} />;
+  } catch {
+    return <Sidebar categories={[]} />;
+  }
+}
+
+async function HeroStats() {
+  try {
+    const stats = await api.stats();
+    return <StatsBar stats={stats} />;
+  } catch {
+    return null;
+  }
+}
+
+// ─── 主页面（壳子立即渲染，各 section 独立流入）──────────────
+
+export default function HomePage() {
   return (
     <div className="grid grid-cols-1 gap-6 pt-6 md:grid-cols-[14rem_1fr]">
-      <Sidebar categories={categories} />
+      <Suspense fallback={<div className="hidden md:block" />}>
+        <SidebarData />
+      </Suspense>
 
       <div className="flex min-w-0 flex-col gap-10">
-        {/* Hero */}
+        {/* Hero：纯静态，立即显示，无需等待数据 */}
         <section className="relative overflow-hidden rounded-3xl border border-white/5 bg-ink-900/60 p-8 md:p-12">
           <div className="absolute inset-0 -z-10 bg-aurora opacity-90" />
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
@@ -50,11 +90,13 @@ export default async function HomePage() {
             <HomeSearchBox />
           </div>
           <div className="mt-6">
-            <StatsBar stats={stats} />
+            <Suspense fallback={<div className="h-8" />}>
+              <HeroStats />
+            </Suspense>
           </div>
         </section>
 
-        {/* 今日推荐 */}
+        {/* 今日推荐：骨架屏先显示，数据到了流式替换 */}
         <section>
           <div className="mb-5 flex items-end justify-between">
             <div>
@@ -69,11 +111,9 @@ export default async function HomePage() {
               查看完整排行榜 →
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-            {(top.items || []).map((t, i) => (
-              <ToolCard key={t.id} tool={t} index={i} hangeffect />
-            ))}
-          </div>
+          <Suspense fallback={<ToolGridSkeleton count={9} hangeffect />}>
+            <TopTools />
+          </Suspense>
         </section>
 
         {/* 新入库 */}
@@ -93,11 +133,9 @@ export default async function HomePage() {
               我要评测赚钱 →
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {(newest.items || []).map((t, i) => (
-              <ToolCard key={t.id} tool={t} index={i} />
-            ))}
-          </div>
+          <Suspense fallback={<ToolGridSkeleton count={6} />}>
+            <NewestTools />
+          </Suspense>
         </section>
       </div>
     </div>

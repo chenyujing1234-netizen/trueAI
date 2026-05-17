@@ -5,6 +5,7 @@ import ScoreRadar from '@/components/ScoreRadar';
 import AddToCompareButton from '@/components/AddToCompareButton';
 import ReviewList from '@/components/ReviewList';
 import BilibiliPlayer from '@/components/BilibiliPlayer';
+import ExternalReviews from '@/components/ExternalReviews';
 import { api } from '@/lib/api';
 import { AUDIENCE_LABELS, FORM_FACTOR_LABELS } from '@/lib/labels';
 
@@ -144,6 +145,8 @@ export default async function ToolDetailPage({ params }) {
           )}
 
           <BilibiliPlayer videoUrl={tool.video_url} title={`${tool.name} 介绍视频`} />
+
+          <ExternalReviews toolSlug={params.slug} />
 
           <section className="glass rounded-3xl p-6">
             <h2 className="mb-3 text-lg font-bold">适合人群</h2>
