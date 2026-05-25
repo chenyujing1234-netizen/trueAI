@@ -1,0 +1,32 @@
+# Smithery (https://smithery.ai) — server manifest for a remote MCP server.
+# When this repo is connected to Smithery, the server is listed publicly at:
+#   https://smithery.ai/server/@chenyujing1234-netizen/trueai
+
+startCommand:
+  type: http
+
+# Production endpoint (SSE transport, mounted on the TrueAI backend).
+remote:
+  url: "https://www.shiflowai.cloud/mcp/sse"
+
+# Human-facing metadata
+name:        "TrueAI"
+description: |
+  Find the right AI SaaS app for any task using the TrueAI catalog
+  (1,600+ curated apps with categories, sub-scores, pricing and real
+  user reviews). Recommend by natural-language need, look up an app by
+  name / slug / URL, browse by category, or attach real user reviews.
+homepage:    "https://www.shiflowai.cloud"
+icon:        "https://www.shiflowai.cloud/favicon.ico"
+license:     "MIT"
+
+tags:
+  - ai-tools
+  - ai-discovery
+  - recommendation
+  - saas
+  - catalog
+  - directory
+
+# Tools exposed by this MCP server
+exampleConfig: {}

@@ -1,5 +1,10 @@
 # 真选AI (TrueAI) — 新一代 AI 导航，懂你
 
+[![Live](https://img.shields.io/badge/live-shiflowai.cloud-22d3ee)](https://www.shiflowai.cloud)
+[![MCP](https://img.shields.io/badge/MCP-server-blueviolet)](./skills/trueai/SKILL.md)
+[![Skill](https://img.shields.io/badge/agent-skill-orange)](./skills/trueai/SKILL.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
+
 > 我来帮你省钱，我来帮你省时间。
 > 数据实时、人工评测、无广告。
 > 没有最好的，只有最适合你的。
@@ -12,6 +17,36 @@ TrueAI 是一个面向 AI 工具的 **智能体推荐 + 人工评测 + 对话式
 - 查看多维排行榜，支持"用自然语言生成专属排名"
 - 把最多 3 个工具加入对比抽屉，做并排多维对比
 - 阅读 / 提交工具评测（审核通过后可获得现金奖励；MVP 仅保留表结构）
+
+## 🤖 接入你的 AI Agent（MCP / Skill）
+
+TrueAI 1600+ 应用目录已封装成 **MCP Server** 和 **单文件 Skill**，让你的
+agent 直接获得"挑 AI 工具"的能力。完整文档：[`skills/trueai/SKILL.md`](./skills/trueai/SKILL.md)。
+
+### 一行接入 MCP（Claude Desktop / Cursor / Cline / Continue / Windsurf）
+
+```json
+{ "mcpServers": { "trueai": { "url": "https://www.shiflowai.cloud/mcp/sse" } } }
+```
+
+接入后 agent 立即获得 4 个工具：
+
+| 工具 | 用途 |
+|---|---|
+| `recommend_ai_tools(description, top_k)` | 用户自然语言需求 → 推荐合适应用 |
+| `get_ai_tool(name_or_url, include_reviews)` | 名称 / slug / 官网 URL → 应用完整信息 |
+| `list_ai_tools(category, free_only, ...)` | 按分类 / 形态 / 是否免费 浏览目录 |
+| `list_categories()` | 列出全部分类 |
+
+### 无 MCP 也能用——drop-in skill 文件
+
+把 [`skills/trueai/SKILL.md`](./skills/trueai/SKILL.md) 复制到任意 agent 的 skills 目录，
+agent 就会按文档里 curl 示例直接调 `https://www.shiflowai.cloud/api/*`。
+
+### 数据 schema
+
+每个 AI 应用 34 个结构化字段（评分 / 价格 / 形态 / 评论 / 链接 …），
+完整 JSON Schema：[`docs/ai_tool_schema.json`](./docs/ai_tool_schema.json)。
 
 ## 技术栈
 
