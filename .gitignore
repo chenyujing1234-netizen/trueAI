@@ -11,7 +11,13 @@ frontend/.next/
 frontend/.env.local
 frontend/out/
 
+# Bulk scraped data (do not push the full 15MB dump to git)
+backend/data/watcha_products.json
+backend/data/*.full.json
+
 # OS / IDE
 .DS_Store
 .vscode/
 .idea/
+*.swp
+*.swo

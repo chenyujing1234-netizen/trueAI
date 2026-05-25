@@ -186,13 +186,14 @@ def fetch_product_reviews(product_id: int, max_pages: int = 5) -> list[dict]:
     return all_reviews
 
 
-def parse_product(raw: dict) -> dict:
-    """将 API 原始产品数据转换为结构化字典。"""
+def parse_product(raw: dict) -> dict | None:
+    """将 API 原始产品数据转换为结构化字典；缺少必要字段时返回 None。"""
+    if not raw or not raw.get("id"):
+        return None
     stats = raw.get("stats", {}) or {}
     categories = [c.get("name", "") for c in (raw.get("categories") or [])]
     tags = [t.get("name", "") for t in ((raw.get("tag") or {}).get("items") or [])]
 
-    # 解析富文本描述
     desc_raw = raw.get("description", "")
     description = _rich_text_to_plain(desc_raw)
 
@@ -255,6 +256,8 @@ def main():
     parser.add_argument("--no-reviews", action="store_true",    help="跳过评论抓取")
     parser.add_argument("--max-review-pages", type=int, default=3, help="每个产品最多抓几页评论")
     parser.add_argument("--delay",      type=float, default=1.0, help="请求间隔秒数")
+    parser.add_argument("--resume",     action="store_true",     help="从 --output 文件读取已抓 slug，跳过这些")
+    parser.add_argument("--save-every", type=int, default=50,    help="每抓取 N 个产品就增量保存一次")
     args = parser.parse_args()
 
     # 初始化 session（获取 cookie）
@@ -263,6 +266,32 @@ def main():
         SESSION.get(BASE_URL, timeout=10)
     except Exception:
         pass
+
+    output_path = os.path.abspath(args.output)
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    # 续抓：读取已有结果，保留并跳过这些 slug
+    results: list[dict] = []
+    done_slugs: set[str] = set()
+    if args.resume and os.path.exists(output_path):
+        try:
+            with open(output_path, encoding="utf-8") as f:
+                existing = json.load(f)
+            results = existing.get("products", [])
+            done_slugs = {p.get("external_slug") or "" for p in results if p.get("external_slug")}
+            print(f"🔁 续抓模式：已有 {len(results)} 条记录，跳过对应 slug\n")
+        except Exception as e:
+            print(f"⚠ 读取已有结果失败，忽略续抓: {e}")
+            results = []
+            done_slugs = set()
+
+    def _save_snapshot():
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump({
+                "scraped_at": datetime.utcnow().isoformat(),
+                "total":      len(results),
+                "products":   results,
+            }, f, ensure_ascii=False, indent=2)
 
     # 获取产品列表
     if args.slugs:
@@ -273,48 +302,70 @@ def main():
         basic_list = fetch_product_list(max_items=args.limit)
         print(f"✅ 共 {len(basic_list)} 个产品\n")
 
-    results = []
     total = len(basic_list)
+    new_count = 0
 
     for i, basic in enumerate(basic_list, 1):
         slug = basic.get("slug") or basic.get("external_slug", "")
+        if not slug:
+            print(f"[{i}/{total}] (无 slug, 跳过)")
+            continue
+        if slug in done_slugs:
+            continue
+
         print(f"[{i}/{total}] {slug}")
 
-        # 详情
-        detail_raw = fetch_product_detail(slug)
+        try:
+            detail_raw = fetch_product_detail(slug)
+        except Exception as e:
+            print(f"  ✗ 详情请求异常，跳过: {e}")
+            time.sleep(args.delay)
+            continue
+
         if not detail_raw:
             print(f"  ✗ 详情获取失败，跳过")
             time.sleep(args.delay)
             continue
 
-        product = parse_product(detail_raw)
+        try:
+            product = parse_product(detail_raw)
+        except Exception as e:
+            print(f"  ✗ 解析异常，跳过: {e}")
+            time.sleep(args.delay)
+            continue
+
+        if not product:
+            print(f"  ✗ 详情数据不完整（缺 id），跳过")
+            time.sleep(args.delay)
+            continue
+
         product["reviews"] = []
 
-        # 评论
         if not args.no_reviews:
             product_id = detail_raw.get("id")
             if product_id:
-                raw_reviews = fetch_product_reviews(product_id, args.max_review_pages)
-                product["reviews"] = [parse_review(r) for r in raw_reviews]
+                try:
+                    raw_reviews = fetch_product_reviews(product_id, args.max_review_pages)
+                    product["reviews"] = [parse_review(r) for r in raw_reviews if r.get("id")]
+                except Exception as e:
+                    print(f"  ⚠ 评论抓取异常: {e}")
                 print(f"  ✓ {product['name']} | score={product['score']:.1f} | {len(product['reviews'])} 条评论")
             time.sleep(args.delay * 0.5)
         else:
             print(f"  ✓ {product['name']} | score={product['score']:.1f}")
 
         results.append(product)
+        done_slugs.add(slug)
+        new_count += 1
+
+        if args.save_every > 0 and new_count % args.save_every == 0:
+            _save_snapshot()
+            print(f"  💾 已保存中间结果 ({len(results)})")
+
         time.sleep(args.delay)
 
-    # 保存结果
-    output_path = os.path.abspath(args.output)
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump({
-            "scraped_at": datetime.utcnow().isoformat(),
-            "total":      len(results),
-            "products":   results,
-        }, f, ensure_ascii=False, indent=2)
-
-    print(f"\n🎉 完成！共抓取 {len(results)} 个产品，已保存到：{output_path}")
+    _save_snapshot()
+    print(f"\n🎉 完成！共抓取 {len(results)} 个产品（本次新增 {new_count}），已保存到：{output_path}")
 
 
 if __name__ == "__main__":
