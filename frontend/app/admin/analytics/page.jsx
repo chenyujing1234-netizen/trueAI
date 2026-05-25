@@ -2,7 +2,10 @@
 
 import { useEffect, useState, useCallback } from 'react';
 
-const API = process.env.NEXT_PUBLIC_API_BASE || 'http://127.0.0.1:8000';
+const API =
+  typeof window === 'undefined'
+    ? process.env.NEXT_PUBLIC_API_BASE || 'http://127.0.0.1:8000'
+    : '';
 
 async function fetchJSON(path) {
   const r = await fetch(`${API}${path}`, { cache: 'no-store' });

@@ -1,0 +1,8 @@
+{
+  "_comment_path": "~/.cursor/mcp.json  — or use Settings → MCP → Add new MCP server",
+  "mcpServers": {
+    "trueai": {
+      "url": "https://www.shiflowai.cloud/mcp/sse"
+    }
+  }
+}

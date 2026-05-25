@@ -12,6 +12,7 @@ from app.api.routers import (
     search,
     analytics,
 )
+from app.api.mcp_server import mcp_sse_app
 from app.middleware.tracking import TrackingMiddleware
 
 app = FastAPI(
@@ -43,3 +44,11 @@ app.include_router(rankings.router, prefix="/api/rankings", tags=["rankings"])
 app.include_router(stats.router, prefix="/api/stats", tags=["stats"])
 app.include_router(search.router, prefix="/api/search", tags=["search"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["analytics"])
+
+# MCP server (SSE transport). Agents connect to:
+#   GET  /mcp/sse        — event stream
+#   POST /mcp/messages/  — client → server messages
+# Configuration in MCP hosts (Claude Desktop / Cursor / Cline / ...):
+#   public:  { "mcpServers": { "trueai": { "url": "https://www.shiflowai.cloud/mcp/sse" } } }
+#   local:   { "mcpServers": { "trueai": { "url": "http://localhost:8000/mcp/sse" } } }
+app.mount("/mcp", mcp_sse_app)

@@ -3,10 +3,7 @@
 import { useEffect, useState } from 'react';
 
 const DEFAULT_LINES = [
-  '我来帮你省钱。',
-  '我来帮你省时间。',
-  '数据实时、人工评测、无广告。',
-  '没有最好的，只有最适合你的。',
+  '帮你快速找到最合适你的AI工具',
 ];
 
 export default function HeroTypewriter({ lines = DEFAULT_LINES, speed = 65, pause = 1500 }) {

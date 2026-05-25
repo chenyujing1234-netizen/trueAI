@@ -1,0 +1,295 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trueai.dev/schemas/ai_tool.schema.json",
+  "title": "AITool",
+  "description": "真选AI (TrueAI) 平台上一个 AI 应用 / 智能体 / AI 工具的标准数据结构。每条记录代表一个独立的 AI 产品，可被其他系统通过 REST API（GET /api/tools, GET /api/tools/{id_or_slug}）拉取，或作为数据交换格式直接消费。所有时间字段均为 ISO 8601；所有 *_url 字段必须是 http(s) 绝对地址。",
+  "type": "object",
+  "version": "1.0.0",
+  "generated_at": "2026-05-20",
+  "required": ["id", "name", "slug", "form_factor", "is_free", "overall_score"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "工具在 TrueAI 内部的唯一数字 ID（主键）。其他系统跨平台引用本工具时使用。",
+      "example": 1023
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 128,
+      "description": "工具的展示名称（如：Cursor、通义千问、Midjourney）。原样保留品牌大小写。",
+      "example": "Cursor"
+    },
+    "slug": {
+      "type": "string",
+      "maxLength": 128,
+      "pattern": "^[a-z0-9\\-\\u4e00-\\u9fff]+$",
+      "description": "工具在 URL 中使用的唯一短标识，全小写 + 中划线，可含中文。详情页 /tool/{slug}。全平台唯一。",
+      "example": "cursor"
+    },
+    "logo_url": {
+      "type": ["string", "null"],
+      "format": "uri",
+      "maxLength": 512,
+      "description": "工具 logo 图片地址（建议 1:1 方图，>=256px）。"
+    },
+    "tagline": {
+      "type": ["string", "null"],
+      "maxLength": 255,
+      "description": "一句话简介 / Slogan。用于卡片副标题、搜索结果摘要。",
+      "example": "AI 原生的代码编辑器"
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "工具的详细介绍（纯文本，已去除富文本/HTML）。可包含换行。用于详情页正文。"
+    },
+    "developer": {
+      "type": ["string", "null"],
+      "maxLength": 128,
+      "description": "开发商 / 组织名称。",
+      "example": "Anysphere"
+    },
+    "launched_at": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "正式发布日期（ISO 8601 yyyy-MM-dd）。可缺失。"
+    },
+    "is_iterating": {
+      "type": "boolean",
+      "description": "是否仍在迭代更新中。false 表示已停止维护/下线。",
+      "default": true
+    },
+    "user_count": {
+      "type": ["string", "null"],
+      "maxLength": 64,
+      "description": "用户规模的描述性字段（保留为字符串以兼容『百万级 / 10w+ / 暂未公布』等口径）。",
+      "example": "100w+"
+    },
+    "form_factor": {
+      "type": "string",
+      "enum": ["saas", "mobile", "cli", "windows_app", "web", "browser_extension", "api"],
+      "description": "产品形态（核心交付方式）。saas=网页 SaaS；mobile=手机原生 App；cli=命令行；windows_app=桌面应用；web=网站/嵌入式 Web；browser_extension=浏览器插件；api=纯 API/SDK。",
+      "default": "saas"
+    },
+    "is_free": {
+      "type": "boolean",
+      "description": "是否存在免费可用部分（包含 Free Tier / 试用 / 完全免费）。付费墙在 pricing_info 中说明。",
+      "default": true
+    },
+    "pricing_info": {
+      "type": ["string", "null"],
+      "maxLength": 255,
+      "description": "定价说明的自由文本，便于直接展示。结构化方案以后再扩展。",
+      "example": "免费版 + Pro $20/月 + Business $40/用户/月"
+    },
+    "gen_time_ms": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "典型一次『生成 / 推理』的耗时（毫秒），由平台评测得出。可缺失。"
+    },
+    "need_vpn": {
+      "type": "boolean",
+      "description": "中国大陆用户访问是否需要科学上网。",
+      "default": false
+    },
+    "support_cli": {
+      "type": "boolean",
+      "description": "是否提供命令行客户端。",
+      "default": false
+    },
+    "support_api": {
+      "type": "boolean",
+      "description": "是否对外提供编程 API / SDK。",
+      "default": false
+    },
+    "official_url": {
+      "type": ["string", "null"],
+      "format": "uri",
+      "maxLength": 512,
+      "description": "产品官方网站地址。"
+    },
+    "video_url": {
+      "type": ["string", "null"],
+      "format": "uri",
+      "maxLength": 512,
+      "description": "演示视频地址（B 站 / YouTube / 自托管均可）。"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["manual", "watcha", "import"],
+      "description": "数据来源标记：manual=平台人工录入；watcha=自动从观猹 watcha.cn 同步；import=其他批量导入。",
+      "default": "manual"
+    },
+    "external_id": {
+      "type": ["string", "null"],
+      "maxLength": 64,
+      "description": "在外部来源平台中的原始 ID。配合 source 字段使用，便于反查与去重。"
+    },
+    "external_slug": {
+      "type": ["string", "null"],
+      "maxLength": 128,
+      "description": "在外部来源平台中的原始 slug。"
+    },
+    "overall_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "综合评分，10 分制，保留 1 位小数。由四个分项加权得出，是排序与『今日推荐』的核心字段。",
+      "example": 8.7
+    },
+    "usability_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "易用性评分（界面、上手成本、文档），10 分制。"
+    },
+    "effect_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "效果评分（生成质量 / 准确度 / 智能水平），10 分制。"
+    },
+    "price_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "价格性价比评分，10 分制。越贵但效果不显著则越低。"
+    },
+    "speed_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "响应速度评分，10 分制。结合 gen_time_ms 与实际可用稳定性。"
+    },
+    "review_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "评测/评论数（含本站 reviews + 外部 external_reviews）。",
+      "default": 0
+    },
+    "reviewed_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "本工具最近一次被人工评测的时间（UTC ISO 8601）。"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "入库时间（UTC ISO 8601）。"
+    },
+    "categories": {
+      "type": "array",
+      "description": "工具所属分类的名称数组（一个工具可属于多个分类）。对应 Category.name；结构化关联见 categories_full。",
+      "items": { "type": "string" },
+      "example": ["代码助手", "通用助手"]
+    },
+    "categories_full": {
+      "type": "array",
+      "description": "工具所属分类的完整对象（可选；列表接口不返回，详情接口可包含）。",
+      "items": { "$ref": "#/$defs/Category" }
+    },
+    "audiences": {
+      "type": "array",
+      "description": "适用人群标签。",
+      "items": {
+        "type": "string",
+        "enum": ["developer", "child", "beginner", "female", "senior", "designer", "student", "creator"]
+      },
+      "example": ["developer", "designer"]
+    },
+    "external_reviews": {
+      "type": "array",
+      "description": "来自外部平台的真实用户评论（可选）。详情接口可包含；列表接口不返回。",
+      "items": { "$ref": "#/$defs/ExternalReview" }
+    }
+  },
+
+  "$defs": {
+    "Category": {
+      "type": "object",
+      "description": "工具分类。可作为侧栏菜单、面包屑、筛选项。",
+      "required": ["id", "name", "slug"],
+      "properties": {
+        "id":        { "type": "integer", "description": "分类内部 ID。" },
+        "parent_id": { "type": ["integer", "null"], "description": "上级分类 ID，根分类为 null。" },
+        "name":      { "type": "string", "maxLength": 64, "description": "分类中文名（如：图像生成、代码助手）。" },
+        "slug":      { "type": "string", "maxLength": 64, "description": "URL 短标识；如 image-gen, coding。" },
+        "icon":      { "type": ["string", "null"], "maxLength": 32, "description": "图标 emoji 或图标 key，前端按需要渲染。" },
+        "sort_order":{ "type": "integer", "description": "展示顺序，越小越靠前。", "default": 0 }
+      }
+    },
+    "ExternalReview": {
+      "type": "object",
+      "description": "外部平台用户评论（当前主要来自 watcha.cn）。每条评论与一个 Tool 关联。",
+      "required": ["id", "tool_id", "source", "external_id"],
+      "properties": {
+        "id":           { "type": "integer", "description": "本站内部评论 ID。" },
+        "tool_id":      { "type": "integer", "description": "所评论工具的 Tool.id。" },
+        "source":       { "type": "string", "enum": ["watcha"], "description": "评论来源平台。" },
+        "external_id":  { "type": "string", "description": "评论在来源平台的原始 ID（去重用）。" },
+        "content":      { "type": ["string", "null"], "description": "评论正文（纯文本）。" },
+        "score":        { "type": ["number", "null"], "minimum": 0, "maximum": 10, "description": "评论附带的评分（若来源平台只有点赞/踩，则映射为 10/null）。" },
+        "author_name":  { "type": ["string", "null"], "maxLength": 128, "description": "评论者昵称。" },
+        "author_avatar":{ "type": ["string", "null"], "format": "uri", "maxLength": 512, "description": "评论者头像 URL。" },
+        "upvotes":      { "type": "integer", "minimum": 0, "description": "点赞数。", "default": 0 },
+        "reply_count":  { "type": "integer", "minimum": 0, "description": "回复数。", "default": 0 },
+        "external_created_at": { "type": ["string", "null"], "format": "date-time", "description": "评论在外部平台的发布时间（UTC ISO 8601）。" },
+        "created_at":   { "type": "string", "format": "date-time", "description": "入库时间。" },
+        "updated_at":   { "type": "string", "format": "date-time", "description": "最后更新时间。" }
+      }
+    }
+  },
+
+  "examples": [
+    {
+      "id": 1023,
+      "name": "Cursor",
+      "slug": "cursor",
+      "logo_url": "https://example.com/logos/cursor.png",
+      "tagline": "AI 原生的代码编辑器",
+      "description": "Cursor 是一款基于 VS Code 深度改造的 AI 代码编辑器，内置 GPT-4 / Claude，可以理解整个仓库上下文。",
+      "developer": "Anysphere",
+      "launched_at": "2023-03-15",
+      "is_iterating": true,
+      "user_count": "100w+",
+      "form_factor": "windows_app",
+      "is_free": true,
+      "pricing_info": "免费版 + Pro $20/月",
+      "gen_time_ms": 1200,
+      "need_vpn": false,
+      "support_cli": false,
+      "support_api": false,
+      "official_url": "https://cursor.com",
+      "video_url": null,
+      "source": "watcha",
+      "external_id": "abc123",
+      "external_slug": "cursor",
+      "overall_score": 9.2,
+      "usability_score": 9.0,
+      "effect_score": 9.5,
+      "price_score": 8.5,
+      "speed_score": 9.0,
+      "review_count": 233,
+      "reviewed_at": "2026-05-20T03:21:00Z",
+      "created_at": "2026-05-17T08:00:00Z",
+      "categories": ["代码助手"],
+      "audiences": ["developer"]
+    }
+  ],
+
+  "x-endpoints": {
+    "list":   "GET /api/tools?sort=overall&page=1&page_size=20",
+    "detail": "GET /api/tools/{id_or_slug}",
+    "categories": "GET /api/categories",
+    "compare":    "POST /api/tools/compare  body: [id1, id2, id3]",
+    "reviews":    "GET /api/reviews?tool_id={id}",
+    "stats":      "GET /api/stats"
+  },
+
+  "x-notes": [
+    "列表接口（GET /api/tools）返回精简结构 ToolBrief（必含 id / name / slug / logo_url / tagline / form_factor / is_free / need_vpn / overall_score / review_count / categories / audiences）。",
+    "详情接口（GET /api/tools/{id_or_slug}）返回完整结构 ToolDetail，包含上述所有字段 + categories_full / external_reviews。",
+    "评分字段均为 0~10 的小数，前端按整数 + 0.5 颗星渲染；缺失或 0 表示尚未评测。",
+    "导入第三方数据时建议提供 source + external_id 用于幂等与去重；TrueAI 内部按 (source, external_id) 唯一去重，其次按 slug，最后按 name 精确匹配。",
+    "字段 form_factor / audiences 的枚举值可能随产品演进追加，建议消费方对未知枚举值采取兼容降级（视为 saas / 无标签）而不是报错。"
+  ]
+}
