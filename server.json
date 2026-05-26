@@ -1,13 +1,11 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.chenyujing1234-netizen/trueai",
   "description": "Recommend and inspect AI SaaS apps from the TrueAI catalog (1,600+ apps) by need, name or URL.",
-  "version": "1.0.0",
-  "status": "active",
+  "version": "1.0.1",
   "repository": {
     "url": "https://github.com/chenyujing1234-netizen/trueAI",
-    "source": "github",
-    "subfolder": "."
+    "source": "github"
   },
   "websiteUrl": "https://www.shiflowai.cloud",
   "icon": "https://www.shiflowai.cloud/favicon.ico",
