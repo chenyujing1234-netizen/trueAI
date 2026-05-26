@@ -1,5 +1,8 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 from app.core.config import settings
 from app.api.routers import (
@@ -12,7 +15,7 @@ from app.api.routers import (
     search,
     analytics,
 )
-from app.api.mcp_server import mcp_sse_app
+from app.api.mcp_server import SERVER_CARD, mcp_sse_app, mcp_streamable_app
 from app.middleware.tracking import TrackingMiddleware
 
 app = FastAPI(
@@ -36,6 +39,18 @@ def health():
     return {"status": "ok", "service": "trueai-api"}
 
 
+# Smithery / 通用 MCP 注册中心通过这个 well-known 文件描述协议、工具与配置 schema。
+# 见 https://smithery.ai/docs/build/publish#troubleshooting
+_SERVER_CARD = os.path.join(
+    os.path.dirname(__file__), "static", "well-known", "mcp", "server-card.json"
+)
+
+
+@app.get("/.well-known/mcp/server-card.json", include_in_schema=False)
+def mcp_server_card():
+    return FileResponse(_SERVER_CARD, media_type="application/json")
+
+
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(categories.router, prefix="/api/categories", tags=["categories"])
 app.include_router(tools.router, prefix="/api/tools", tags=["tools"])
@@ -45,10 +60,20 @@ app.include_router(stats.router, prefix="/api/stats", tags=["stats"])
 app.include_router(search.router, prefix="/api/search", tags=["search"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["analytics"])
 
-# MCP server (SSE transport). Agents connect to:
-#   GET  /mcp/sse        — event stream
-#   POST /mcp/messages/  — client → server messages
-# Configuration in MCP hosts (Claude Desktop / Cursor / Cline / ...):
-#   public:  { "mcpServers": { "trueai": { "url": "https://www.shiflowai.cloud/mcp/sse" } } }
-#   local:   { "mcpServers": { "trueai": { "url": "http://localhost:8000/mcp/sse" } } }
-app.mount("/mcp", mcp_sse_app)
+# MCP server, two transports mounted on the same uvicorn process.
+#
+# Streamable HTTP (preferred, single URL, default for Smithery / modern hosts):
+#   { "mcpServers": { "trueai": { "url": "https://www.shiflowai.cloud/mcp" } } }
+#
+# Legacy SSE (kept for older clients):
+#   GET  /mcp-sse/sse        — event stream
+#   POST /mcp-sse/messages/  — client → server messages
+#   { "mcpServers": { "trueai": { "url": "https://www.shiflowai.cloud/mcp-sse/sse" } } }
+app.mount("/mcp", mcp_streamable_app)
+app.mount("/mcp-sse", mcp_sse_app)
+
+
+# Static "server card" so directories (Smithery etc.) can skip auto-scan.
+@app.get("/.well-known/mcp/server-card.json")
+def mcp_server_card():
+    return SERVER_CARD

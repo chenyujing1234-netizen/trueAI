@@ -1,0 +1,123 @@
+{
+  "$schema": "https://smithery.ai/schemas/server-card.json",
+  "name": "trueai",
+  "title": "TrueAI",
+  "description": "Find the right AI SaaS app for any task using the TrueAI catalog (1,600+ curated apps with categories, sub-scores, pricing and real user reviews). Recommend by natural-language need, look up by name / slug / URL, browse by category, attach real user reviews.",
+  "version": "1.0.0",
+  "homepage": "https://www.shiflowai.cloud",
+  "repository": "https://github.com/chenyujing1234-netizen/trueAI",
+  "license": "MIT",
+  "icon": "https://www.shiflowai.cloud/favicon.ico",
+  "transport": {
+    "type": "sse",
+    "url": "https://www.shiflowai.cloud/mcp/sse"
+  },
+  "configSchema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+  },
+  "tools": [
+    {
+      "name": "recommend_ai_tools",
+      "description": "Find AI tools that match a natural-language user need. Returns {intents, candidates, external}. ``candidates`` is already ranked by relevance & score; ``external`` lists fallback nav sites only when no in-catalog candidate matches.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "The user's need in their own words. Be specific about scenario, audience, platform, language and budget. e.g. '我是新手想学编程，要免费的 AI 工具'."
+          },
+          "top_k": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 5,
+            "description": "Maximum number of candidates to return."
+          }
+        },
+        "required": ["description"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_ai_tool",
+      "description": "Resolve and return the full structured record of one AI app. Accepts numeric id, slug, display name, or official URL. Resolution order: numeric id → exact slug → official_url substring → brand keyword from URL → fuzzy name/tagline match.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name_or_url": {
+            "type": "string",
+            "description": "The AI app's display name (e.g. 'Cursor', '通义千问'), its TrueAI slug, a numeric id, or its official URL (e.g. 'https://cursor.com')."
+          },
+          "include_reviews": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, attach up to max_reviews real user reviews (sourced from watcha.cn) for social proof / usage tips."
+          },
+          "max_reviews": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20,
+            "default": 5,
+            "description": "Cap on attached reviews."
+          }
+        },
+        "required": ["name_or_url"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_ai_tools",
+      "description": "Browse the catalog with structured filters and sorting. Returns {items, total, page, page_size}. Each item is a brief record; call get_ai_tool to drill into one.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": ["string", "null"],
+            "description": "Optional category slug, e.g. 'coding', 'image-gen', 'writing'. Use list_categories() to discover."
+          },
+          "free_only": {
+            "type": ["boolean", "null"],
+            "description": "If true, only return tools with a free tier."
+          },
+          "form_factor": {
+            "type": ["string", "null"],
+            "enum": [null, "saas", "mobile", "cli", "windows_app", "web", "browser_extension", "api"],
+            "description": "Filter by product form."
+          },
+          "sort": {
+            "type": "string",
+            "enum": ["overall", "usability", "effect", "price", "speed", "reviews", "new"],
+            "default": "overall",
+            "description": "Sort key."
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "page_size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_categories",
+      "description": "List every category in the TrueAI catalog. Each entry has slug, name, optional icon, sort_order, parent_id and tool_count. Use the returned slugs to filter list_ai_tools(category=...).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    }
+  ]
+}
