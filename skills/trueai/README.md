@@ -10,7 +10,7 @@ recommend, look up and compare AI SaaS apps using the
 | Form               | What it is                                                                 | Where you put it |
 | ------------------ | -------------------------------------------------------------------------- | ---------------- |
 | **`SKILL.md`**     | One markdown file describing when & how to call the TrueAI HTTP API.       | Drop into your agent's skill / prompt-context directory. Works with any agent (no special protocol). |
-| **Embedded MCP**   | Same skill exposed as MCP tools from the running TrueAI backend at `/mcp/sse`. | Point any MCP-compatible host at the URL — no extra process or venv. |
+| **Embedded MCP**   | Same skill exposed as MCP tools from the running TrueAI backend at `/mcp` (Streamable HTTP) and `/mcp-sse/sse` (legacy SSE). | Point any MCP-compatible host at the URL — no extra process or venv. |
 
 Both forms hit the **same** TrueAI backend HTTP API. There is no separate
 service to install or maintain.
@@ -39,7 +39,7 @@ Add this to **Claude Desktop** / **Cursor** / **Cline** / **Continue** /
 ```json
 {
   "mcpServers": {
-    "trueai": { "url": "https://www.shiflowai.cloud/mcp/sse" }
+    "trueai": { "url": "https://www.shiflowai.cloud/mcp" }
   }
 }
 ```
@@ -47,7 +47,7 @@ Add this to **Claude Desktop** / **Cursor** / **Cline** / **Continue** /
 You'll get four tools: `recommend_ai_tools`, `get_ai_tool`,
 `list_ai_tools`, `list_categories`.
 
-> Running TrueAI yourself? Replace the URL with `http://localhost:8000/mcp/sse`.
+> Running TrueAI yourself? Replace the URL with `http://localhost:8000/mcp`.
 
 ## Files
 

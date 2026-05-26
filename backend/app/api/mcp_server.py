@@ -365,7 +365,79 @@ def list_categories() -> str:
         ])
 
 
-# The ASGI sub-app to mount on FastAPI.  Exposes:
-#   GET  /mcp/sse        — SSE event stream (long-lived)
-#   POST /mcp/messages/  — agent → server messages
-mcp_sse_app = mcp.sse_app()
+# ──────────────────────────────────────────────────────────────────────────
+# ASGI sub-apps to mount on FastAPI.
+#
+# We expose two transports so any MCP client works out of the box:
+#
+#   1. Streamable HTTP (newer, single endpoint, default for Smithery / most
+#      modern hosts). Mounted at the parent path → URL is just `/mcp`.
+#
+#   2. SSE (legacy). Mounted at `/mcp-sse` → URLs `/mcp-sse/sse` and
+#      `/mcp-sse/messages/`. Kept for backward compatibility with older
+#      Claude Desktop versions and the curl/MCP-client examples we shipped
+#      in earlier docs.
+# ──────────────────────────────────────────────────────────────────────────
+# 子 app 内部默认会把 streamable 路由挂在 `/mcp`，再被 FastAPI mount 到
+# `/mcp` 后整体路径会变成 `/mcp/mcp`，URL 难看且不符合 Smithery 默认。
+# 改成根路径，这样 mount 到 `/mcp` 后整体就是 `/mcp/`。同理给 sse 也调整一下，
+# sse 的两条路由是 `sse_path` 和 `message_path`，前者放 `/sse`、后者放 `/messages/`
+# 是默认值，这里保持。
+mcp.settings.streamable_http_path = "/"
+
+mcp_streamable_app = mcp.streamable_http_app()
+mcp_sse_app        = mcp.sse_app()
+
+
+# Static "server card" advertised at /.well-known/mcp/server-card.json so
+# directories (Smithery, etc.) can skip the auto-scan step entirely.
+SERVER_CARD = {
+    "schema_version": "2025-03-26",
+    "name":        "trueai",
+    "version":     "1.0.0",
+    "title":       "TrueAI",
+    "description": (
+        "Find the right AI SaaS app for any task using the TrueAI catalog "
+        "(1,600+ curated apps with categories, sub-scores, pricing and "
+        "real user reviews). Recommend by natural-language need, look up "
+        "by name / slug / URL, browse by category, or attach real user "
+        "reviews."
+    ),
+    "vendor":      "TrueAI",
+    "homepage":    "https://www.shiflowai.cloud",
+    "repository":  "https://github.com/chenyujing1234-netizen/trueAI",
+    "license":     "MIT",
+    "transports": [
+        {
+            "type":     "streamable-http",
+            "endpoint": "https://www.shiflowai.cloud/mcp",
+        },
+        {
+            "type":     "sse",
+            "endpoint": "https://www.shiflowai.cloud/mcp-sse/sse",
+        },
+    ],
+    "capabilities": {
+        "tools": {
+            "listChanged": False,
+        },
+    },
+    "tools": [
+        {
+            "name": "recommend_ai_tools",
+            "description": "Find AI tools that match a natural-language user need.",
+        },
+        {
+            "name": "get_ai_tool",
+            "description": "Resolve and return the full structured record of one AI app by name, slug, numeric id, or official URL.",
+        },
+        {
+            "name": "list_ai_tools",
+            "description": "Browse the catalog with structured filters and sorting.",
+        },
+        {
+            "name": "list_categories",
+            "description": "List every category in the TrueAI catalog.",
+        },
+    ],
+}

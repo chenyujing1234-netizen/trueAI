@@ -26,7 +26,7 @@ agent 直接获得"挑 AI 工具"的能力。完整文档：[`skills/trueai/SKIL
 ### 一行接入 MCP（Claude Desktop / Cursor / Cline / Continue / Windsurf）
 
 ```json
-{ "mcpServers": { "trueai": { "url": "https://www.shiflowai.cloud/mcp/sse" } } }
+{ "mcpServers": { "trueai": { "url": "https://www.shiflowai.cloud/mcp" } } }
 ```
 
 接入后 agent 立即获得 4 个工具：

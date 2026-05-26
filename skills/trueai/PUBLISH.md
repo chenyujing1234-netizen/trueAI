@@ -5,9 +5,11 @@ when registering on a new MCP / agent-tool directory.
 
 The server lives at:
 
-* SSE endpoint:  `https://www.shiflowai.cloud/mcp/sse`
-* GitHub repo:   `https://github.com/chenyujing1234-netizen/trueAI`
-* Hosted demo:   `https://www.shiflowai.cloud`
+* Streamable HTTP endpoint (recommended): `https://www.shiflowai.cloud/mcp`
+* SSE endpoint (legacy):                  `https://www.shiflowai.cloud/mcp-sse/sse`
+* well-known card:                        `https://www.shiflowai.cloud/.well-known/mcp/server-card.json`
+* GitHub repo:                            `https://github.com/chenyujing1234-netizen/trueAI`
+* Hosted demo:                            `https://www.shiflowai.cloud`
 
 ---
 
@@ -61,7 +63,7 @@ Add this entry under **🎨 Discovery & Search** (or the closest section):
 - [TrueAI](https://github.com/chenyujing1234-netizen/trueAI) - Find the right
   AI SaaS app for any task: search 1,600+ curated apps by need, name, or URL,
   with categories, ratings and real user reviews. Hosted MCP at
-  `https://www.shiflowai.cloud/mcp/sse`.
+  `https://www.shiflowai.cloud/mcp`.
 ```
 
 Suggested PR title: `Add TrueAI - 1,600+ AI tools catalog (hosted MCP)`.
@@ -72,7 +74,7 @@ Suggested PR title: `Add TrueAI - 1,600+ AI tools catalog (hosted MCP)`.
 
 1. Visit <https://www.pulsemcp.com/submit>.
 2. Server name: `TrueAI`
-3. SSE URL: `https://www.shiflowai.cloud/mcp/sse`
+3. URL: `https://www.shiflowai.cloud/mcp` (Streamable HTTP)
 4. GitHub: `https://github.com/chenyujing1234-netizen/trueAI`
 5. Description: copy from `server.json`.
 
@@ -82,7 +84,7 @@ Suggested PR title: `Add TrueAI - 1,600+ AI tools catalog (hosted MCP)`.
 
 1. Visit <https://cursor.directory/mcp/submit> (or `https://cursor.directory/submit`).
 2. Pick category **MCP Server**.
-3. Paste the URL `https://www.shiflowai.cloud/mcp/sse` and the GitHub link.
+3. Paste the URL `https://www.shiflowai.cloud/mcp` and the GitHub link.
 
 ---
 
@@ -108,7 +110,7 @@ suggest an app.
 | Description  | 1,600+ curated AI SaaS apps with categories, sub-scores, pricing and real user reviews. Exposes 4 MCP tools so agents can recommend, look up and compare AI tools. |
 | Website      | https://www.shiflowai.cloud |
 | Repository   | https://github.com/chenyujing1234-netizen/trueAI |
-| MCP endpoint | https://www.shiflowai.cloud/mcp/sse (SSE transport) |
+| MCP endpoint | https://www.shiflowai.cloud/mcp (Streamable HTTP) / https://www.shiflowai.cloud/mcp-sse/sse (SSE legacy) |
 | Skill file   | https://github.com/chenyujing1234-netizen/trueAI/blob/main/skills/trueai/SKILL.md |
 | Schema       | https://github.com/chenyujing1234-netizen/trueAI/blob/main/docs/ai_tool_schema.json |
 | License      | MIT |

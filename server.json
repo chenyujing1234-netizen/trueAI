@@ -13,8 +13,12 @@
   "icon": "https://www.shiflowai.cloud/favicon.ico",
   "remotes": [
     {
+      "type": "streamable-http",
+      "url": "https://www.shiflowai.cloud/mcp"
+    },
+    {
       "type": "sse",
-      "url": "https://www.shiflowai.cloud/mcp/sse"
+      "url": "https://www.shiflowai.cloud/mcp-sse/sse"
     }
   ]
 }

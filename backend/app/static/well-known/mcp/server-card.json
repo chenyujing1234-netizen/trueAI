@@ -9,9 +9,19 @@
   "license": "MIT",
   "icon": "https://www.shiflowai.cloud/favicon.ico",
   "transport": {
-    "type": "sse",
-    "url": "https://www.shiflowai.cloud/mcp/sse"
+    "type": "streamable-http",
+    "url": "https://www.shiflowai.cloud/mcp"
   },
+  "transports": [
+    {
+      "type": "streamable-http",
+      "url": "https://www.shiflowai.cloud/mcp"
+    },
+    {
+      "type": "sse",
+      "url": "https://www.shiflowai.cloud/mcp-sse/sse"
+    }
+  ],
   "configSchema": {
     "type": "object",
     "properties": {},

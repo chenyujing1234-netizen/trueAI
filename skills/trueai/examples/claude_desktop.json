@@ -4,7 +4,7 @@
   "_comment_usage": "Merge the mcpServers entry into the file above, then restart Claude Desktop.",
   "mcpServers": {
     "trueai": {
-      "url": "https://www.shiflowai.cloud/mcp/sse"
+      "url": "https://www.shiflowai.cloud/mcp"
     }
   }
 }

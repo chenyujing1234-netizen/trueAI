@@ -55,8 +55,13 @@ agent supports best.
 
 ### A. Native MCP (recommended if your agent speaks MCP)
 
-The TrueAI backend already exposes an MCP endpoint at `/mcp/sse`. No
-separate process needed.
+The TrueAI backend exposes two MCP transports — pick whichever your
+client supports:
+
+| Transport            | URL                                                      | When to use                                                |
+| -------------------- | -------------------------------------------------------- | ---------------------------------------------------------- |
+| **Streamable HTTP** (recommended) | `https://www.shiflowai.cloud/mcp`           | Smithery, modern Claude Desktop / Cursor / Cline / Windsurf |
+| SSE (legacy)         | `https://www.shiflowai.cloud/mcp-sse/sse`                | Older MCP clients that haven't migrated yet                |
 
 In **Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_config.json`),
 **Cursor** (`~/.cursor/mcp.json`), **Cline**, **Continue**, **Windsurf**:
@@ -65,13 +70,13 @@ In **Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_conf
 {
   "mcpServers": {
     "trueai": {
-      "url": "https://www.shiflowai.cloud/mcp/sse"
+      "url": "https://www.shiflowai.cloud/mcp"
     }
   }
 }
 ```
 
-(For local dev replace the URL with `http://localhost:8000/mcp/sse`.)
+(For local dev replace the URL with `http://localhost:8000/mcp`.)
 
 You'll then see four tools available to the agent:
 

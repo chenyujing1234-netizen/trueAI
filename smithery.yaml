@@ -5,9 +5,11 @@
 startCommand:
   type: http
 
-# Production endpoint (SSE transport, mounted on the TrueAI backend).
+# Production endpoint — Streamable HTTP transport (modern MCP),
+# mounted on the TrueAI backend. SSE legacy endpoint also available at
+# https://www.shiflowai.cloud/mcp-sse/sse for older clients.
 remote:
-  url: "https://www.shiflowai.cloud/mcp/sse"
+  url: "https://www.shiflowai.cloud/mcp"
 
 # Human-facing metadata
 name:        "TrueAI"

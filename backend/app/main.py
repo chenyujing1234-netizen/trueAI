@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,13 +16,24 @@ from app.api.routers import (
     search,
     analytics,
 )
-from app.api.mcp_server import SERVER_CARD, mcp_sse_app, mcp_streamable_app
+from app.api.mcp_server import mcp, mcp_sse_app, mcp_streamable_app
 from app.middleware.tracking import TrackingMiddleware
+
+
+# FastAPI 不会把 mount 子应用的 lifespan 事件转发过去，
+# 而 mcp.streamable_http_app() 内部的 StreamableHTTPSessionManager
+# 必须在 lifespan 里启动；不接管就会 500（Task group is not initialized）。
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with mcp.session_manager.run():
+        yield
+
 
 app = FastAPI(
     title="TrueAI API",
     description="真选AI (TrueAI) — 让你不再纠结选哪个 AI 工具",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -71,9 +83,3 @@ app.include_router(analytics.router, prefix="/api/analytics", tags=["analytics"]
 #   { "mcpServers": { "trueai": { "url": "https://www.shiflowai.cloud/mcp-sse/sse" } } }
 app.mount("/mcp", mcp_streamable_app)
 app.mount("/mcp-sse", mcp_sse_app)
-
-
-# Static "server card" so directories (Smithery etc.) can skip auto-scan.
-@app.get("/.well-known/mcp/server-card.json")
-def mcp_server_card():
-    return SERVER_CARD
