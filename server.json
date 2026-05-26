@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
   "name": "io.github.chenyujing1234-netizen/trueai",
-  "description": "Find and inspect AI SaaS apps from the TrueAI catalog (1,600+ curated apps with categories, sub-scores, pricing and real user reviews). Use to recommend tools by natural-language need, look up an app by name / slug / URL, browse by category, or attach real user reviews.",
+  "description": "Recommend and inspect AI SaaS apps from the TrueAI catalog (1,600+ apps) by need, name or URL.",
   "version": "1.0.0",
   "status": "active",
   "repository": {
