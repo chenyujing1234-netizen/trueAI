@@ -146,6 +146,7 @@ export default function HomePage() {
 }
 
 const REPO_URL = 'https://github.com/chenyujing1234-netizen/trueAI';
+const STRUCTAIWEB_URL = 'https://github.com/chenyujing1234-netizen/StructAIWeb';
 
 const ACCESS_POINTS = [
   {
@@ -193,9 +194,25 @@ function OpenSourceSection() {
             完全开源 · <span className="neon-text">代码全在 GitHub</span>
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/70">
-            真选AI 是一个 <strong className="text-white">完全开源</strong> 的项目（MIT 许可），
-            前端、后端、爬虫、数据 schema、MCP Server 全部在 GitHub
-            上公开。我们相信「AI 工具的选择权」应该属于用户而不是某个广告系统，
+            真选AI 是一个 <strong className="text-white">完全开源</strong> 的项目（MIT 许可），由两个仓库组成：
+            <a
+              href={REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mx-1 text-neon-cyan hover:underline"
+            >
+              trueAI
+            </a>
+            （网站前后端 + 数据 schema + MCP Server）和
+            <a
+              href={STRUCTAIWEB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mx-1 text-neon-cyan hover:underline"
+            >
+              StructAIWeb
+            </a>
+            （驱动数据采集的 AI 智能体）。我们相信「AI 工具的选择权」应该属于用户而不是某个广告系统，
             所以代码、数据、评分逻辑都欢迎你审视、复用、贡献。
           </p>
         </div>
@@ -212,6 +229,46 @@ function OpenSourceSection() {
           <span className="text-white/60">→</span>
         </a>
       </div>
+
+      {/* 核心采集器：StructAIWeb 高亮横幅 */}
+      <a
+        href={STRUCTAIWEB_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group mb-6 block overflow-hidden rounded-2xl border border-neon-cyan/30 bg-gradient-to-br from-neon-cyan/[0.08] via-white/[0.04] to-neon-purple/[0.08] p-5 transition hover:border-neon-cyan/60 hover:from-neon-cyan/[0.14]"
+      >
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0 flex-1">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <span className="rounded-full border border-neon-cyan/40 bg-neon-cyan/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-neon-cyan">
+                Core Agent · 数据来源
+              </span>
+              <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/50">
+                Python · Playwright · 多模态视觉
+              </span>
+            </div>
+            <h3 className="text-lg font-black md:text-xl">
+              本站 1600+ 应用数据，来自开源智能体{' '}
+              <span className="neon-text">StructAIWeb</span>
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-white/70">
+              真选AI 的核心评分与结构化字段（名称、定价、子功能、易用性 / 效果 / 性价比 …
+              共 34 个字段）<strong className="text-white">不是人工录入</strong>，而是由我们另一个开源项目
+              <strong className="text-white"> StructAIWeb </strong>
+              自动跑出来的：它接管你本地 Chrome，按"价格 → 功能 → 关于 → 文档"启发式探索任意 AI SaaS 网站，
+              点 CTA 主动试用（永远避开付费按钮），再用 LLM + 多模态视觉模型整合成客观可比的结构化报告。
+              <strong className="text-white">想自己跑数据 / 扩展到更多 AI 工具？fork 即可。</strong>
+            </p>
+          </div>
+          <div className="flex shrink-0 items-center gap-2 rounded-xl border border-neon-cyan/30 bg-ink-950/40 px-4 py-3 text-sm font-semibold text-neon-cyan group-hover:border-neon-cyan group-hover:bg-neon-cyan/10">
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
+              <path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2.16c-3.2.7-3.88-1.37-3.88-1.37-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.78 1.2 1.78 1.2 1.04 1.79 2.72 1.27 3.39.97.1-.75.41-1.27.74-1.56-2.55-.29-5.24-1.28-5.24-5.71 0-1.26.45-2.29 1.2-3.1-.12-.3-.52-1.49.11-3.11 0 0 .97-.31 3.18 1.18a11.04 11.04 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.63 1.62.23 2.81.11 3.11.75.81 1.2 1.84 1.2 3.1 0 4.44-2.7 5.42-5.27 5.7.42.36.79 1.08.79 2.18v3.23c0 .31.21.68.8.56C20.21 21.39 23.5 17.07 23.5 12 23.5 5.73 18.27.5 12 .5z" />
+            </svg>
+            <span>查看 StructAIWeb</span>
+            <span className="text-white/50">↗</span>
+          </div>
+        </div>
+      </a>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {ACCESS_POINTS.map((it) => (

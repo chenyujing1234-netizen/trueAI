@@ -3,6 +3,7 @@
 [![Live](https://img.shields.io/badge/live-shiflowai.cloud-22d3ee)](https://www.shiflowai.cloud)
 [![MCP](https://img.shields.io/badge/MCP-server-blueviolet)](./skills/trueai/SKILL.md)
 [![Skill](https://img.shields.io/badge/agent-skill-orange)](./skills/trueai/SKILL.md)
+[![StructAIWeb](https://img.shields.io/badge/data%20agent-StructAIWeb-orange)](https://github.com/chenyujing1234-netizen/StructAIWeb)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
 > 我来帮你省钱，我来帮你省时间。
@@ -47,6 +48,33 @@ agent 就会按文档里 curl 示例直接调 `https://www.shiflowai.cloud/api/*
 
 每个 AI 应用 34 个结构化字段（评分 / 价格 / 形态 / 评论 / 链接 …），
 完整 JSON Schema：[`docs/ai_tool_schema.json`](./docs/ai_tool_schema.json)。
+
+## 🕷️ 数据从哪里来：StructAIWeb（核心采集智能体）
+
+TrueAI 网站里 1600+ 应用的结构化字段——名称、Logo、Slogan、定价、子功能列表、
+易用性 / 效果 / 性价比评分等——**不是人工录入的**，而是由我们另一个开源项目
+**[StructAIWeb](https://github.com/chenyujing1234-netizen/StructAIWeb)** 自动跑出来的。
+它是 TrueAI 数据管线的 **核心 AI 智能体**：
+
+| 维度 | 说明 |
+| --- | --- |
+| 仓库 | <https://github.com/chenyujing1234-netizen/StructAIWeb> |
+| 形态 | Windows 桌面 GUI + CLI（Python + Playwright） |
+| 浏览器 | 通过 CDP 接管你本地已登录的 Chrome，天然复用 Cookie / 扩展，规避大多数风控 |
+| 探索 | 启发式按「价格 → 功能 → 关于 → 文档」遍历站点，自动点 CTA 进入主功能区 |
+| 试用 | 主动输入提示词、点 "生成 / 提交"，**永远避开 "购买 / 充值 / 订阅"** 按钮 |
+| 视觉 | 可选启用多模态视觉模型（Qwen-VL / GPT-4o / GLM-4V）识别"该点哪个按钮" |
+| 登录墙 | 自动检测并暂停，等你完成登录后继续 |
+| 整合 | 把所有页面快照交给 LLM 输出结构化 JSON + 三项主观评分（usability / effect / price） |
+| 输出字段 | 与 [`docs/ai_tool_schema.json`](./docs/ai_tool_schema.json) **完全对齐** |
+| License | MIT |
+
+简言之：
+
+> **StructAIWeb 负责"看懂一个 AI 网站"，TrueAI 负责"把上千个看懂的结果织成一个懂你的导航站"。**
+
+想自己跑数据 / 扩展更多 AI 工具？fork StructAIWeb，跑完把 `output/*.json` 喂进 TrueAI 的
+`backend/scripts/sync_*.py` 入库脚本即可。
 
 ## 技术栈
 
